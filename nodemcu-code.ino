@@ -102,6 +102,14 @@ const char index_html[] PROGMEM = R"rawliteral(
             background-color: rgb(255, 91, 91);
         }
 
+        .btn-cont .ambience {
+            background-color: rgb(248, 165, 57);
+        }
+
+        .normalLights {
+            display: none;
+        }
+
         @media (max-width: 600px) {
 
             .hall,
@@ -149,8 +157,8 @@ const char index_html[] PROGMEM = R"rawliteral(
         </div>
         <div class="normalLights">
             <h3>Lights</h3>
-            <button class="on" onclick="hallbulboff()">Hall Light On</button>
-            <button class="off" onclick="hallbulboff()">Hall Light Off</button>
+            <button class="on" onclick="hallNormalLightOn()">Hall Light On</button>
+            <button class="off" onclick="hallNormalLightOff()">Hall Light Off</button>
         </div>
         <div class="fan">
             <h3>Fan</h3>
@@ -161,8 +169,8 @@ const char index_html[] PROGMEM = R"rawliteral(
         </div>
         <div class="tv">
             <h3>TV</h3>
-            <button class="on" onclick="tvOff()">TV ON</button>
-            <button class="off" onclick="tvOn()">TV OFF</button>
+            <button class="on" onclick="tvOn()">TV ON</button>
+            <button class="off" onclick="tvOff()">TV OFF</button>
         </div>
     </div>
     <!-- <h2>Bedroom Controls</h2> -->
@@ -180,8 +188,8 @@ const char index_html[] PROGMEM = R"rawliteral(
         </div>
         <div class="normalLights">
             <h3>Lights</h3>
-            <button class="on" onclick="hallbulboff()">Bedroom Light On</button>
-            <button class="off" onclick="hallbulboff()">Bedroom Light Off</button>
+            <button class="on" onclick="bedNormalLightOn()">Bedroom Light On</button>
+            <button class="off" onclick="bedNormalLightOff()">Bedroom Light Off</button>
         </div>
         <div class="fan">
             <h3>Fan</h3>
@@ -194,10 +202,8 @@ const char index_html[] PROGMEM = R"rawliteral(
     <div class="kitchen">
         <div class="lights">
             <h3>Lights</h3>
-            <button class="on" onclick="hallfunon()">Fun Mode</button>
-            <button class="on" onclick="hallseriouson()">Serious Mode</button>
-            <button class="on" onclick="hallrelaxon()">Relaxed Mode</button>
-            <button class="off" onclick="hallbulboff()">Hall Light Off</button>
+            <button class="on" onclick="kitchenlighton()">Kitchen Light On</button>
+            <button class="off" onclick="kitchenlightoff()">Kitchen Light Off</button>
         </div>
     </div>
 
@@ -278,7 +284,7 @@ const char index_html[] PROGMEM = R"rawliteral(
         })
 
         // Hall 
-        // Lights 
+        // Ambience Lights 
         function hallfunon() {
             fetch('/hallfunon')
                 .then(response => response.text())
@@ -299,6 +305,18 @@ const char index_html[] PROGMEM = R"rawliteral(
                 .then(response => response.text())
                 .then(data => console.log(data))
         }
+        // Normal Lights 
+        function hallnormalLightOn() {
+            fetch('/hallnormalon')
+                .then(response => response.text())
+                .then(data => console.log(data))
+        }
+        function hallNormalLightOff() {
+            fetch('/hallnormaloff')
+                .then(response => response.text())
+                .then(data => console.log(data))
+        }
+
         // Fans 
         function hallFanSlow() {
             fetch('/hallFanSlow')
@@ -334,7 +352,7 @@ const char index_html[] PROGMEM = R"rawliteral(
 
 
         //Bedroom
-        // Lights 
+        // Ambience Lights 
         function bedfunon() {
             fetch('/bedfunon')
                 .then(response => response.text())
@@ -355,6 +373,19 @@ const char index_html[] PROGMEM = R"rawliteral(
                 .then(response => response.text())
                 .then(data => console.log(data))
         }
+        // Normal Lights 
+        function bedNormalLightOn() {
+            fetch('/bedlighton')
+                .then(response => response.text())
+                .then(data => console.log(data))
+        }
+        function bedNormalLightOff() {
+            fetch('/bedlightoff')
+                .then(response => response.text())
+                .then(data => console.log(data))
+        }
+
+
         // Fan
         function bedFanSlow() {
             fetch('/bedFanSlow')
@@ -375,6 +406,19 @@ const char index_html[] PROGMEM = R"rawliteral(
             fetch('/bedFanOff')
                 .then(response => response.text())
                 .then(data => console.log(data))
+        }
+
+        // Kitchen 
+        // Lights 
+        function kitchenlighton() {
+            fetch('/kitchenlighton')
+                .then(response => response.text())
+                .then(data => console.log(data))
+        }
+        function kitchenlightoff() {
+            fetch('/kitchenlightoff')
+                .then(response => response.text())
+                .then(data => console.log(data))
         } 
     </script>
 </body>
@@ -386,7 +430,6 @@ const char index_html[] PROGMEM = R"rawliteral(
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
-  pinMode(touchSensorPin, INPUT); // Set touch sensor pin as input
 
   // Set up NodeMCU as Access Point
   WiFi.softAP(ssid, pass);
@@ -441,6 +484,17 @@ void setup() {
     Serial.println("Hall Fan Off");
     server.send(200, "text/plain", "Hall Bulb OFF");
   });
+    // Normal Lights
+  server.on("/hallnormalon", HTTP_GET, [](){
+    Serial.println("Hall Normal Light On");
+    server.send(200, "text/plain", "Hall Bulb On");
+  });
+  server.on("/hallnormaloff", HTTP_GET, [](){
+    Serial.println("Hall Normal Light Off");
+    server.send(200, "text/plain", "Hall Bulb On");
+  });
+
+
     // TV
   server.on("/tvOn", HTTP_GET, [](){
     Serial.println("TV ON");
@@ -453,7 +507,7 @@ void setup() {
   
 
   // Bedroom Server Code
-    // Lights
+    // Ambience Lights
   server.on("/bedfunon", HTTP_GET, [](){
     Serial.println("Bedroom Fun Mode On");
     server.send(200, "text/plain", "Hall Bulb ON");
@@ -470,6 +524,16 @@ void setup() {
     Serial.println("Bedroom Lights OFF");
     server.send(200, "text/plain", "Hall Bulb OFF");
   });
+    // Normal Light
+  server.on("/bednormalon", HTTP_GET, [](){
+    Serial.println("Bedroom Normal Light On");
+    server.send(200, "text/plain", "Hall Bulb OFF");
+  });
+  server.on("/bednormaloff", HTTP_GET, [](){
+    Serial.println("Bedroom Normal Light Off");
+    server.send(200, "text/plain", "Hall Bulb OFF");
+  });
+  
     // Fan
   server.on("/bedFanSlow", HTTP_GET, [](){
     Serial.println("Bedroom Fan Slow");
@@ -488,6 +552,16 @@ void setup() {
     server.send(200, "text/plain", "Hall Bulb OFF");
   });
 
+  // Kitchen
+  server.on("/kitchenlighton", HTTP_GET, [](){
+    Serial.println("Kitchen Light On");
+    server.send(200, "text/plain", "Hall Bulb OFF");
+  });
+  server.on("/kitchenlightoff", HTTP_GET, [](){
+    Serial.println("Kitchen Light Off");
+    server.send(200, "text/plain", "Hall Bulb OFF");
+  });
+
   server.begin();
 }
 
@@ -495,22 +569,4 @@ void loop() {
   // put your main code here, to run repeatedly:
   server.handleClient();
 
-  // Check for touch sensor input
-  if (digitalRead(touchSensorPin) == HIGH) {
-    Serial.println("Touch detected! Sending notification...");
-    
-    // Send notification to a connected device
-    WiFiClient client;
-    const char* notificationServer = "192.168.4.1"; // Replace with your notification server URL
-    if (client.connect(notificationServer, 80)) {
-      client.print(String("GET /notify?message=Touch%20detected HTTP/1.1\r\n") +
-                   "Host: " + notificationServer + "\r\n" +
-                   "Connection: close\r\n\r\n");
-      Serial.println("Notification sent!");
-    } else {
-      Serial.println("Failed to connect to notification server.");
-    }
-    
-    delay(1000); // Debounce delay
-  }
 }
