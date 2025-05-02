@@ -18,6 +18,8 @@ int bedStripPin = 3;
 int stripLed = 10;
 int ena = 4;
 int enb = 5;
+int hallNormalLight = 6;
+int bedNormalLight = 7;
 // int in1 = 6;
 // int in2 = 7;
 // int in3 = 8;
@@ -82,10 +84,22 @@ void loop() {
       fanFast(enb);
     } else if(command == "Bedroom Fan Off"){ 
       fanOff(enb);
-    } else if(command == "TV ON"){
+    } else if(command == "TV ON"){       // Hall TV
       tvOn();
     } else if(command == "TV OFF"){
       tvOff();
+    } else if(command == "Hall Normal Light On"){   // Hall Normal Light
+      normalOn(hallNormalLight);
+    } else if(command == "Hall Normal Light Off"){
+      normalOff(hallNormalLight);
+    } else if(command == "Bedroom Normal Light On"){  //Bedroom Normal Light
+      normalOn(bedNormalLight);
+    } else if(command == "Bedroom Normal Light Off"){
+      normalOff(bedNormalLight);
+    } else if(command == "Kitchen Light On"){   // Kitchen Light
+      normalOn(kitchenLight);
+    } else if(command == "Kitchen Light Off"){
+      normalOff(kitchenLight);
     }
   }
 }
@@ -160,6 +174,12 @@ void tvOn(){
 void tvOff(){
   display.clearDisplay();
   display.display();
+}
+void normalOn(int pin){
+  digitalWrite(pin, HIGH);
+}
+void normalOff(int pin){
+  digitalWrite(pin, LOW);
 }
 
 int sinColor(int x, int offset){
