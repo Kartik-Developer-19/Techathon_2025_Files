@@ -89,6 +89,14 @@
             background-color: rgb(255, 91, 91);
         }
 
+        .btn-cont .ambience {
+            background-color: rgb(248, 165, 57);
+        }
+
+        .normalLights {
+            display: none;
+        }
+
         @media (max-width: 600px) {
 
             .hall,
@@ -136,8 +144,8 @@
         </div>
         <div class="normalLights">
             <h3>Lights</h3>
-            <button class="on" onclick="hallbulboff()">Hall Light On</button>
-            <button class="off" onclick="hallbulboff()">Hall Light Off</button>
+            <button class="on" onclick="hallNormalLightOn()">Hall Light On</button>
+            <button class="off" onclick="hallNormalLightOff()">Hall Light Off</button>
         </div>
         <div class="fan">
             <h3>Fan</h3>
@@ -148,8 +156,8 @@
         </div>
         <div class="tv">
             <h3>TV</h3>
-            <button class="on" onclick="tvOff()">TV ON</button>
-            <button class="off" onclick="tvOn()">TV OFF</button>
+            <button class="on" onclick="tvOn()">TV ON</button>
+            <button class="off" onclick="tvOff()">TV OFF</button>
         </div>
     </div>
     <!-- <h2>Bedroom Controls</h2> -->
@@ -167,8 +175,8 @@
         </div>
         <div class="normalLights">
             <h3>Lights</h3>
-            <button class="on" onclick="hallbulboff()">Bedroom Light On</button>
-            <button class="off" onclick="hallbulboff()">Bedroom Light Off</button>
+            <button class="on" onclick="bedNormalLightOn()">Bedroom Light On</button>
+            <button class="off" onclick="bedNormalLightOff()">Bedroom Light Off</button>
         </div>
         <div class="fan">
             <h3>Fan</h3>
@@ -181,10 +189,8 @@
     <div class="kitchen">
         <div class="lights">
             <h3>Lights</h3>
-            <button class="on" onclick="hallfunon()">Fun Mode</button>
-            <button class="on" onclick="hallseriouson()">Serious Mode</button>
-            <button class="on" onclick="hallrelaxon()">Relaxed Mode</button>
-            <button class="off" onclick="hallbulboff()">Hall Light Off</button>
+            <button class="on" onclick="kitchenlighton()">Kitchen Light On</button>
+            <button class="off" onclick="kitchenlightoff()">Kitchen Light Off</button>
         </div>
     </div>
 
@@ -265,7 +271,7 @@
         })
 
         // Hall 
-        // Lights 
+        // Ambience Lights 
         function hallfunon() {
             fetch('/hallfunon')
                 .then(response => response.text())
@@ -286,6 +292,18 @@
                 .then(response => response.text())
                 .then(data => console.log(data))
         }
+        // Normal Lights 
+        function hallNormalLightOn() {
+            fetch('/hallnormalon')
+                .then(response => response.text())
+                .then(data => console.log(data))
+        }
+        function hallNormalLightOff() {
+            fetch('/hallnormaloff')
+                .then(response => response.text())
+                .then(data => console.log(data))
+        }
+
         // Fans 
         function hallFanSlow() {
             fetch('/hallFanSlow')
@@ -321,7 +339,7 @@
 
 
         //Bedroom
-        // Lights 
+        // Ambience Lights 
         function bedfunon() {
             fetch('/bedfunon')
                 .then(response => response.text())
@@ -342,6 +360,19 @@
                 .then(response => response.text())
                 .then(data => console.log(data))
         }
+        // Normal Lights 
+        function bedNormalLightOn() {
+            fetch('/bedlighton')
+                .then(response => response.text())
+                .then(data => console.log(data))
+        }
+        function bedNormalLightOff() {
+            fetch('/bedlightoff')
+                .then(response => response.text())
+                .then(data => console.log(data))
+        }
+
+
         // Fan
         function bedFanSlow() {
             fetch('/bedFanSlow')
@@ -360,6 +391,19 @@
         }
         function bedFanOff() {
             fetch('/bedFanOff')
+                .then(response => response.text())
+                .then(data => console.log(data))
+        }
+
+        // Kitchen 
+        // Lights 
+        function kitchenlighton() {
+            fetch('/kitchenlighton')
+                .then(response => response.text())
+                .then(data => console.log(data))
+        }
+        function kitchenlightoff() {
+            fetch('/kitchenlightoff')
                 .then(response => response.text())
                 .then(data => console.log(data))
         } 
