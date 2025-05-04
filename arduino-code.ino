@@ -20,6 +20,8 @@ int ena = 4;
 int enb = 5;
 int hallNormalLight = 6;
 int bedNormalLight = 7;
+int exhaust = 11;
+int gasPin = A0;
 // int in1 = 6;
 // int in2 = 7;
 // int in3 = 8;
@@ -32,6 +34,10 @@ void setup() {
   // put your setup code here, to run once:
   pinMode(ena, OUTPUT);
   pinMode(enb, OUTPUT);
+  pinMode(hallNormalLight, OUTPUT);
+  pinMode(bedNormalLight, OUTPUT);
+  pinMode(exhaust, OUTPUT);
+  pinMode(gasPin,  INPUT);
   
   display.begin(SSD1306_SWITCHCAPVCC, SCREEN_I2C_ADDR);
 
@@ -49,6 +55,13 @@ void loop() {
     String command = Serial.readStringUntil('\n');
     command.trim();
     Serial.println(command);
+    int gasData = analogRead(gasPin);
+
+    if(gasPin >= 600){
+      normalOn(exhaust);
+    } else if(gasPin < 600){
+      normalOff(exhaust);
+    }
     
     if(command == "Hall Fun Mode On"){
       // digitalWrite(hallBulb, HIGH);
