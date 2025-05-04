@@ -1,14 +1,38 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <WiFiClient.h>
+#include <ESPAsyncWebServer.h>
+#include <DHT.h>
 
 const char* ssid = "Home automation Device";
 const char* pass = "12345678";
 
 ESP8266WebServer server(80);
 
-// Define the touch sensor pin
-const int touchSensorPin = D1; // Change D1 to the appropriate pin number for your setup
+int dhtPin = 12;
+
+DHT dht(dhtPin, DHT11);
+
+AsyncWebServer ws(80);
+
+String temperature() {
+  float t = dht.readTemperature();
+
+  if(isnan(t)){
+    return "--";
+  } else {
+    return String(t);
+  }
+}
+String humidity() {
+  float t = dht.readHumidity();
+
+  if(isnan(t)){
+    return "--";
+  } else {
+    return String(t);
+  }
+}
 
 const char index_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE html>
@@ -135,6 +159,16 @@ const char index_html[] PROGMEM = R"rawliteral(
 
 <body>
     <h1>Control Your Home</h1>
+    <div class="temperature-humidity">
+        <h2 class="temp-cont">
+            <span>temperature : </span>
+            <span id="temp">%TEMPERATURE%</span>
+        </h2>
+        <h2 class="hum-cont">
+            <span>humidity : </span>
+            <span id="temp">%HUMIDITY%</span>
+        </h2>
+    </div>
     <div class="btn-cont">
         <button class="hall-btn">Hall</button>
         <button class="bed-btn">Bedroom</button>
@@ -223,6 +257,27 @@ const char index_html[] PROGMEM = R"rawliteral(
         let bedAmbienceLight = document.querySelector(".bedroom .lights")
         let bedNormalLight_btn = document.querySelector(".bedroom .btn-cont .normal")
         let bedNormalLight = document.querySelector(".bedroom .normalLights")
+
+        setInterval(function () {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    document.getElementById("temp").innerHTML = this.responseText;
+                }
+            };
+            xhttp.open("GET", "/temperature", true);
+            xhttp.send();
+        }, 1000);
+        setInterval(function () {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    document.getElementById("hum").innerHTML = this.responseText;
+                }
+            };
+            xhttp.open("GET", "/humidity", true);
+            xhttp.send();
+        }, 1000);
 
         hall_btn.addEventListener("click", () => {
             hall_btn.style.backgroundColor = "rgb(248, 165, 57)"
@@ -426,10 +481,21 @@ const char index_html[] PROGMEM = R"rawliteral(
 </html>
 )rawliteral";
 
+String processor(const String& var){
+  if(var == "TEMPERATURE"){
+    return temperature();
+  } else if(var == "HUMIDITY"){
+    return humidity();
+  }
+  return String();
+}
+
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
+
+  dht.begin();
 
   // Set up NodeMCU as Access Point
   WiFi.softAP(ssid, pass);
@@ -448,6 +514,13 @@ void setup() {
   server.on("/", HTTP_GET, [](){
     server.send_P(200, "text/html", index_html);
   });
+
+  ws.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/plain", temperature().c_str());
+  })
+  ws.on("/temperature", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/html", humidity().c_str());
+  })
 
   // Hall Server Code
     // Lights
@@ -563,6 +636,7 @@ void setup() {
   });
 
   server.begin();
+  ws.begin();
 }
 
 void loop() {
