@@ -122,6 +122,16 @@
 
 <body>
     <h1>Control Your Home</h1>
+    <div class="temperature-humidity">
+        <h2 class="temp-cont">
+            <span>temperature : </span>
+            <span id="temp">--</span>
+        </h2>
+        <h2 class="hum-cont">
+            <span>humidity : </span>
+            <span id="hum">--</span>
+        </h2>
+    </div>
     <div class="btn-cont">
         <button class="hall-btn">Hall</button>
         <button class="bed-btn">Bedroom</button>
@@ -195,6 +205,27 @@
     </div>
 
     <script>
+        setInterval(function () {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    document.getElementById("temp").innerHTML = this.responseText;
+                }
+            };
+            xhttp.open("GET", "/temperature", true);
+            xhttp.send();
+        }, 1000);
+        setInterval(function () {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    document.getElementById("hum").innerHTML = this.responseText;
+                }
+            };
+            xhttp.open("GET", "/humidity", true);
+            xhttp.send();
+        }, 1000);
+
         let hall_btn = document.querySelector(".hall-btn")
         let bed_btn = document.querySelector(".bed-btn")
         let kitchen_btn = document.querySelector(".kitchen-btn")
